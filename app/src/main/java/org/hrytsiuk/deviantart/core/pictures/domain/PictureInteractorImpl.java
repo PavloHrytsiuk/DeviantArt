@@ -25,7 +25,7 @@ public final class PictureInteractorImpl extends PictureInteractor {
     }
 
     @Override
-    public Observable<List<Picture>> fetchPictures(@NonNull String accessToken, int limit) {
-        return api.fetchPictures(accessToken,limit).map(PictureWrapper::getResults);
+    public Observable<List<Picture>> fetchPictures(@NonNull final String accessToken, final int limit) {
+        return api.fetchPictures(accessToken, limit).map(PictureWrapper::getResults);
     }
 }

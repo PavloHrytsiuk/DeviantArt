@@ -16,6 +16,7 @@ import org.hrytsiuk.deviantart.core.pictures.PicturePref;
 import org.hrytsiuk.deviantart.core.pictures.presentation.PicturePresenter;
 import org.hrytsiuk.deviantart.core.pictures.presentation.PicturePresenterImpl;
 import org.hrytsiuk.deviantart.core.pictures.presentation.PictureView;
+import org.hrytsiuk.deviantart.utils.NetworkUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements PictureView, OnItemClickListener {
+public final class MainActivity extends BaseActivity implements PictureView, OnItemClickListener {
 
     private static final String ACCESS_TOKEN = "Access token";
     private static final String CLICKED_PICTURE = "Pictures list";
@@ -36,36 +37,37 @@ public class MainActivity extends BaseActivity implements PictureView, OnItemCli
     RecyclerView pictureRecycle;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        presenter = new PicturePresenterImpl();
-        presenter.attachView(this);
-        presenter.fetchAccessToken();
-        preference = new PicturePref(this);
-        pictureRecycle.setLayoutManager(new LinearLayoutManager(this));
-
+        if (NetworkUtils.isNetworkConnected(this)) {
+            presenter = new PicturePresenterImpl();
+            presenter.attachView(this);
+            presenter.fetchAccessToken();
+            preference = new PicturePref(this);
+            pictureRecycle.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            showToast(getString(R.string.message_no_connection));
+        }
     }
 
     @Override
     public void saveAccessToken(@NonNull String accessToken) {
-        Log.d("TAG", "Access Token:" + accessToken);
         preference.saveStringData(accessToken, ACCESS_TOKEN);
-        presenter.fetchPictures(accessToken, 100);
+        presenter.fetchPictures(accessToken, 120);
     }
 
     @Override
     public void loadPictures(@NonNull List<Picture> pictures) {
-        Log.d("TAG", "List od pictures:" + Arrays.asList(pictures));
         adapter = new PictureAdapter(pictures, this);
         pictureRecycle.setAdapter(adapter);
         this.pictures = pictures;
     }
 
     @Override
-    public void onItemClick(int position) {
+    public void onItemClick(final int position) {
         final Intent intent = new Intent(this, PictureDetailActivity.class);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(CLICKED_PICTURE, pictures.get(position));

@@ -9,6 +9,4 @@ public interface PicturePresenter extends BasePresenter<PictureView> {
     void fetchPictures(@NonNull final String accessToken, final int limit);
 
     void fetchAccessToken();
-
-    //void saveAccessToken();
 }

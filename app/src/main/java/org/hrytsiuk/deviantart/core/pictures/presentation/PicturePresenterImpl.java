@@ -17,8 +17,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class PicturePresenterImpl implements PicturePresenter {
 
-    private static final String TAG = "PicturePresenterImpl";
-
     private final CompositeSubscription subscriptions = new CompositeSubscription();
     private final PictureInteractor interactor;
     private PictureView view;
@@ -29,7 +27,7 @@ public final class PicturePresenterImpl implements PicturePresenter {
 
 
     @Override
-    public void fetchPictures(@NonNull String accessToken, int limit) {
+    public void fetchPictures(@NonNull final String accessToken, final int limit) {
         final Subscription subscription = interactor.fetchPictures(accessToken, limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -46,7 +44,7 @@ public final class PicturePresenterImpl implements PicturePresenter {
                     }
 
                     @Override
-                    public void onNext(List<Picture> pictures) {
+                    public void onNext(@NonNull final List<Picture> pictures) {
                         view.loadPictures(pictures);
                     }
                 });
@@ -72,18 +70,12 @@ public final class PicturePresenterImpl implements PicturePresenter {
                     }
 
                     @Override
-                    public void onNext(String accessToken) {
+                    public void onNext(@NonNull final String accessToken) {
                         view.saveAccessToken(accessToken);
                     }
                 });
         subscriptions.add(subscription);
     }
-
-   /* @Override
-    public void saveAccessToken() {
-
-    }*/
-
 
     @Override
     public void onDestroy() {
